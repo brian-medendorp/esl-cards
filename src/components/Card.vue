@@ -1,6 +1,7 @@
 <template>
 	<article>
-		<img v-bind:src="card.imageUrl" />
+		<img v-show="imageLoaded" v-bind:src="card.imageUrl" @load="onImageLoad"/>
+		<img v-if="!imageLoaded" src="./../assets/placeholder.svg" />
 		<h1>{{card.name}}</h1>
 		<div><label>Type:</label> {{card.type}}</div>
 		<div><label>Card Set:</label> {{card.set.name}}</div>
@@ -11,7 +12,17 @@
 <script>
 export default {
 	name: 'Card',
-	props: ['card']
+	props: ['card'],
+	data: function () {
+		return {
+			imageLoaded: false
+		}
+	},
+	methods: {
+		onImageLoad: function() {
+			this.imageLoaded = true;
+		}
+	}
 }
 </script>
 
