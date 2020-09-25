@@ -5,7 +5,7 @@
 			<input id="search" type="text" v-model="search" placeholder="enter card name"/>
 			<button v-on:click="fetchCards">Fetch</button>
 		</header>
-		<main id="cards">
+		<main id="cards" v-infinite-scroll="fetchCards" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
 			<Card
 				v-for="card in cards"
 				v-bind:key="card.name"
