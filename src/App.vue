@@ -2,10 +2,9 @@
 	<div id="app">
 		<header id="searchBar">
 			<label for="search">Search: </label>
-			<input id="search" type="text" v-model="search" placeholder="enter card name"/>
-			<button v-on:click="fetchCards">Fetch</button>
+			<input id="search" type="text" v-model="query" placeholder="enter card name" v-debounce:600ms="searchCards"/>
 		</header>
-		<main id="cards" v-infinite-scroll="fetchCards" infinite-scroll-disabled="loading" infinite-scroll-distance="10">
+		<main id="cards" v-infinite-scroll="fetchCards" infinite-scroll-disabled="loading || finished" infinite-scroll-distance="10">
 			<Card
 				v-for="card in cards"
 				v-bind:key="card.name"
@@ -29,8 +28,10 @@ export default {
 	data () {
 		return {
 			loading: false,
+			finished: false,
 			pageSize: 20,
 			page: 1,
+			query: '',
 			cards: []
 		}
 	},
@@ -43,12 +44,28 @@ export default {
 					page: this.page
 				}
 			}
-			// TODO: prevent API call when all cards are loaded using _totalCount
+
+			// add query parameter if needed
+			if (this.query) {
+				// encode the string since it's user-entered
+				config.params.name = encodeURIComponent(this.query);
+			}
+
+			// prevent API call when all cards are loaded using _totalCount
+			if (this.finished) {
+				return;
+			}
+
+			// perform the API call
 			this.loading = true
 			this.$http.get(baseURL, config).then((result) => {
 				this.cards = this.cards.concat(result.data.cards)
 				this.loading = false
 				this.page++;
+				// check the total card count to prevent extra API calls
+				if (this.cards.length >= result.data._totalCount) {
+					this.finished = true;
+				}
 			}).catch(function(error) {
 				console.log(error)
 				// TODO: add error handling
@@ -59,7 +76,17 @@ export default {
 				// 503 - service unavailable
 				this.loading = false
 			})
-
+		},
+		resetCards: function () {
+			this.cards = [];
+			this.page = 1;
+			this.finished = false;
+		},
+		searchCards: function () {
+			// clear out the cards array first
+			this.resetCards();
+			// then fetch cards with the name parameter to search
+			this.fetchCards();
 		}
 	}
 }
