@@ -108,9 +108,12 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	color: #2c3e50;
-	//margin-top: 60px;
 }
 
+/* setting this with a fixed position so it stays at the top of the screen even when scrolling down */
+/* NOTE: when testing with device toolbar in chrome, this still gets partially scrolled
+	off the screen; not really sure how to fix that -- and it seems to be a
+	chrome / android specific issue? */
 #searchBar {
 	background-color: white;
 	border-bottom: 2px solid black;
@@ -132,4 +135,14 @@ body {
 	width: 200px;
 	margin: auto;
 }
+
+/* change view method if the screen is small (i.e. mobile devices) */
+@media (max-width: 409px) { /* card image width */
+	#cards {
+		flex-direction: column;
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+}
+
 </style>

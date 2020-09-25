@@ -44,4 +44,15 @@ export default {
 	label {
 		font-weight: bold;
 	}
+
+	/* change view method if the screen is small (i.e. mobile devices) */
+	@media (max-width: 409px) { /* card image width */
+		article, img {
+			width: 100%;
+		}
+		article {
+			border-radius: 0px;
+			box-shadow: none;
+		}
+	}
 </style>
